@@ -47,6 +47,7 @@ If you wish to use your own TURN server or another service for handling peer con
 - React.js
 - WebRTC
 - Metered.ca (for TURN servers)
+- Plannig to impelement own TURN server in AWS
 
 ## Contributing
 
