@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import shuffle from '../assets/icons/Shuffle.png';
-import add from '../assets/icons/plusNoBackground.png';
+import add from '../assets/icons/PlusNoBackground.png';
+import logo from '../assets/logo.png';
 import Lottie from "react-lottie";
 import animationData from "../assets/Animations/girlOnMobile.json";
 import { Link } from 'react-router-dom';
@@ -34,7 +35,7 @@ const Home = () => {
         <div className='bg-gray-800 h-screen lg:overflow-hidden md:overflow-hidden'>
             <div className='mx-auto max-w-[80%]'>
                 <div className='flex justify-between items-center'>
-                    <img src="Images/logo.png" alt="Logo" className='lg:w-48 sm:w-24' />
+                    <img src={logo} alt="Logo" className='lg:w-48 sm:w-24' />
                     <Navbar />
                 </div>
                 <div className='flex flex-col lg:flex-row items-center justify-center p-8'>

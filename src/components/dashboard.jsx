@@ -2,6 +2,7 @@ import { React, useEffect, useRef } from 'react';
 import Navbar from './Navbar';
 import sendIcon from '../assets/icons/send.png';
 import plusIcon from '../assets/icons/plus.png';
+import logo from '../assets/logo.png';
 
 const Dashboard = () => {
     const userVideoRef = useRef(null);
@@ -40,7 +41,7 @@ const Dashboard = () => {
 
                 <div
                     className='w-full flex items-center justify-center shadow-xl p-2 rounded-2xl'>
-                    <img src="Images/logo.png" alt="" width={200} />
+                    <img src={logo} alt="" width={200} />
 
                 </div>
                 <div className='shadow-xl rounded-xl'>
