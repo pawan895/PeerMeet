@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home';
-import Dashboard from './components/Dashboard.jsx';
+import Dashboard from './components/dashboard.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
