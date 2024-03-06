@@ -1,19 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import Dashboard from './components/dashboard'
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import Home from './pages/Home';
+import Dashboard from './components/Dashboard';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <Dashboard />
-      </div>
-    </>
-  )
+
+    <div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        
+      />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        {/* <Route path='/signin' element={<SignIn />} /> */}
+        <Route path='/dashboard' element={<Dashboard />} />
+        {/* <Route path='*' element={<PageNotFound />} />           */}
+      </Routes>
+
+    </div>
+
+  );
 }
 
-export default App
+export default App;
