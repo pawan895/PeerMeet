@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import shuffle from '../assets/icons/shuffle.png';
+import shuffle from '../assets/icons/Shuffle.png';
 import add from '../assets/icons/plusNoBackground.png';
 import Lottie from "react-lottie";
 import animationData from "../assets/Animations/girlOnMobile.json";
