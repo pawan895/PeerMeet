@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import shuffle from '../assets/icons/Shuffle.png';
+import login from '../assets/icons/Login.png';
 import add from '../assets/icons/PlusNoBackground.png';
 import logo from '../assets/logo.png';
 import Lottie from "react-lottie";
@@ -50,16 +50,18 @@ const Home = () => {
                             choose Instant meet to have your own meet.
                         </p>
                         <div className='flex flex-col lg:flex-row gap-4'>
+                        <Link to="/peerjoin">
+                            <button className='bg-[#6a4e56] rounded-xl flex gap-2 py-3 px-4 text-gray-200' onClick={handleInstantMeetClick}>
+                                <img src={login} alt="" className='w-6' />
+                                <span>Join Meet</span>
+                            </button>
+                            </Link>
                             <Link to="/dashboard">
                                 <button className='bg-[#6a4e56] rounded-xl flex gap-2 py-3 px-4 text-gray-200'>
-                                    <img src={shuffle} alt="" className='w-6' />
-                                    <span>Random Match</span>
+                                    <img src={add} alt="" className='w-6' />
+                                    <span>Start Meet</span>
                                 </button>
                             </Link>
-                            <button className='bg-[#6a4e56] rounded-xl flex gap-2 py-3 px-4 text-gray-200' onClick={handleInstantMeetClick}>
-                                <img src={add} alt="" className='w-6' />
-                                <span>Instant Meet</span>
-                            </button>
                         </div>
                     </div>
                     <div>

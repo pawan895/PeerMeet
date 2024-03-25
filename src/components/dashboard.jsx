@@ -1,98 +1,151 @@
-import { React, useEffect, useRef } from 'react';
-import Navbar from './Navbar';
-import sendIcon from '../assets/icons/send.png';
-import plusIcon from '../assets/icons/plus.png';
+import React, { useEffect, useRef } from 'react';
+import { onValue, ref, set, off } from 'firebase/database';
+import { db } from '../firebase';
+import { UserAuth } from "../context/AuthContext";
+import login from '../assets/icons/Login.png';
 import logo from '../assets/logo.png';
 
 const Dashboard = () => {
     const userVideoRef = useRef(null);
     const clientVideoRef = useRef(null);
+    const localConnectionRef = useRef(null);
+    const { user, logOut } = UserAuth();
+    const offerRef = ref(db, `Meets/${user.uid}/Offer`);
+    const answerRef = ref(db, `Meets/${user.uid}/Answer`);
 
     useEffect(() => {
-        const constraints = { audio: false, video: true };
         const startWebcam = async () => {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                console.log(stream);
-                userVideoRef.current.srcObject = stream;
-                clientVideoRef.current.srcObject = stream;
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+                if (stream) {
+                    userVideoRef.current.srcObject = stream;
+                    console.log("Stream obtained successfully:", stream);
+                    createPeerConnection(stream);
+                } else {
+                    console.error("Failed to obtain stream:", stream);
+                }
             } catch (err) {
-                console.log(err);
+                console.error("Error accessing webcam:", err);
             }
         };
+
         startWebcam();
 
         return () => {
-            if (userVideoRef.current) {
-                const stream = userVideoRef.current.srcObject;
-                const tracks = stream?.getTracks() || [];
-                tracks.forEach(track => {
-                    track.stop();
-                });
-            }
+            const tracks = userVideoRef.current.srcObject?.getTracks() || [];
+            tracks.forEach(track => track.stop());
         };
     }, []);
 
+    const createPeerConnection = async (stream) => {
+        try {
+            const localConnection = new RTCPeerConnection({
+                iceServers: [
+                    {
+                      urls: "stun:stun.relay.metered.ca:80",
+                    },
+                    {
+                      urls: "turn:standard.relay.metered.ca:80",
+                      username: "79fd5ee51186e1ce1a7addeb",
+                      credential: "G+eiTE1mPZru3K9/",
+                    },
+                    {
+                      urls: "turn:standard.relay.metered.ca:80?transport=tcp",
+                      username: "79fd5ee51186e1ce1a7addeb",
+                      credential: "G+eiTE1mPZru3K9/",
+                    },
+                    {
+                      urls: "turn:standard.relay.metered.ca:443",
+                      username: "79fd5ee51186e1ce1a7addeb",
+                      credential: "G+eiTE1mPZru3K9/",
+                    },
+                    {
+                      urls: "turns:standard.relay.metered.ca:443?transport=tcp",
+                      username: "79fd5ee51186e1ce1a7addeb",
+                      credential: "G+eiTE1mPZru3K9/",
+                    },
+                ],
+              });
+
+            localConnection.onicecandidate = handleIceCandidate;
+            const sendChannel = localConnection.createDataChannel("sendChannel");
+            sendChannel.onmessage = handleChannelMessage;
+            sendChannel.onopen = () => console.log("Channel opened.");
+            sendChannel.onclose = () => console.log("Channel closed.");
+
+            stream.getTracks().forEach(track => localConnection.addTrack(track, stream));
+
+            const offer = await localConnection.createOffer();
+            await localConnection.setLocalDescription(offer);
+            set(offerRef, { sdp: offer.sdp, type: offer.type });
+            localConnectionRef.current = localConnection;
+
+            console.log("Local connection created successfully:", localConnection);
+        } catch (error) {
+            console.error("Error creating peer connection:", error);
+        }
+    };
+
+    const handleIceCandidate = async (e) => {
+        const { localDescription } = localConnectionRef.current;
+        console.log("NEW ice candidate!! on local connection:", JSON.stringify(localDescription));
+        const temp = { sdp: localDescription.sdp, type: localDescription.type };
+        set(offerRef, temp);
+    };
+
+    const handleChannelMessage = (e) => console.log("Message received:", e.data);
+
+    const handleSignOut = async () => {
+        try {
+            await logOut();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        if (localConnectionRef.current != null) {
+            const handleAnswer = async (snapshot) => {
+                const { localConnection } = localConnectionRef.current;
+                const data = snapshot.val();
+                console.log("Received answer from database:", data); // Add this console log to check the received data
+                if (data && localConnection) {
+                    try {
+                        await localConnection.setRemoteDescription(new RTCSessionDescription(data));
+                        console.log("Answer received from database and set as remote description", data);
+                    } catch (error) {
+                        console.error("Error setting remote description:", error);
+                    }
+                }
+            };
+
+            onValue(answerRef, handleAnswer);
+
+            return () => {
+                off(answerRef, handleAnswer);
+            };
+        }
+    }, [localConnectionRef.current]);
 
     return (
-        <div className="flex h-screen bg-gray-900">
-
-            <div className='w-2/6 p-4 bg-gray-700 flex flex-col justify-center items-center gap-4 '>
-
-                <div
-                    className='w-full flex items-center justify-center shadow-xl p-2 rounded-2xl'>
-                    <img src={logo} alt="" width={200} />
-
-                </div>
-                <div className='shadow-xl rounded-xl'>
-
-                    <div className='p-2'>
-                        <video ref={clientVideoRef} width="640" height="480" autoPlay playsInline
-                            className='rounded-2xl' />
-                    </div>
-                    <div className='p-2'>
-                        <video ref={userVideoRef} width="640" height="480" autoPlay playsInline
-                            className='rounded-2xl'
-                        />
-                    </div>
-
-                </div>
-
-
+        <div className="h-screen bg-gray-800 overflow-hidden">
+            <div className='w-full flex items-center justify-center shadow-xl p-2 rounded-2xl'>
+                <img src={logo} alt="" width={200} />
             </div>
-            <div className='w-4/6 bg-gray-800 px-8 py-4 flex flex-col justify-between'>
-                <Navbar />
-                <div className='bg-gray-700 flex flex-col justify-end h-5/6 p-2 rounded-xl'>
-
-                    <div>
-                        {/* Example Chat Messages */}
-
-                        <div className="mb-2">
-                            <h1 className='text-gray-300'><strong>User 1:</strong> Hello!</h1>
-                        </div>
-                        <div className="mb-2">
-                            <h1 className='text-gray-300'><strong>User 2:</strong> Hi there!</h1>
-                        </div>
-
+            <div className='flex justify-end p-4'>
+                <button className='flex text-gray-300 items-center gap-2 justify-right' onClick={handleSignOut}>
+                    <img src={login} alt="" width={40} />LogOut
+                </button>
+            </div>
+            <div className='p-4 bg-gray-700 flex justify-center items-center gap-4 '>
+                <div className='flex sm:flex-row my-10 items-center justify-center shadow-xl rounded-xl'>
+                    <div className='p-2'>
+                        <video ref={clientVideoRef} width="640" height="480" autoPlay playsInline className='rounded-2xl' />
                     </div>
-
-                    <div className="relative m-2">
-                        <input
-                            type="text"
-                            placeholder="Type your message..."
-                            className="bg-gray-600 border text-gray-300 rounded-lg p-2 pl-10 focus:outline-none focus:border-gray-400 w-full"
-                        />
-                        <img src={plusIcon} alt="" className='absolute top-0 left-2 w-6 h-6 mt-2' />
-                        <button className="absolute top-0 right-0 px-4 py-2 rounded-md hover:bg-blue-600">
-                            <img src={sendIcon} alt="" className='w-6 h-6' />
-                        </button>
+                    <div className='p-2'>
+                        <video ref={userVideoRef} width="640" height="480" autoPlay playsInline className='rounded-2xl' />
                     </div>
-
-
-
                 </div>
-
-
             </div>
         </div>
     );
