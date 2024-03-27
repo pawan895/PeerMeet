@@ -4,6 +4,7 @@ import logo from '../assets/logo.png';
 import { onValue, ref, set } from 'firebase/database';
 import { UserAuth } from "../context/AuthContext";
 import { db } from '../firebase';
+import IceServer from '../iceServer';
 
 const PeerJoin = () => {
     const userVideoRef = useRef(null);
@@ -31,35 +32,9 @@ const PeerJoin = () => {
             tracks.forEach(track => track.stop());
         };
     }, []);
-
+    console.log("This is the iceServer logs",IceServer)
     const joinExistingConnection = async () => {
-        const remoteConnection = new RTCPeerConnection({
-            iceServers: [
-                {
-                  urls: "stun:stun.relay.metered.ca:80",
-                },
-                {
-                  urls: "turn:standard.relay.metered.ca:80",
-                  username: "79fd5ee51186e1ce1a7addeb",
-                  credential: "G+eiTE1mPZru3K9/",
-                },
-                {
-                  urls: "turn:standard.relay.metered.ca:80?transport=tcp",
-                  username: "79fd5ee51186e1ce1a7addeb",
-                  credential: "G+eiTE1mPZru3K9/",
-                },
-                {
-                  urls: "turn:standard.relay.metered.ca:443",
-                  username: "79fd5ee51186e1ce1a7addeb",
-                  credential: "G+eiTE1mPZru3K9/",
-                },
-                {
-                  urls: "turns:standard.relay.metered.ca:443?transport=tcp",
-                  username: "79fd5ee51186e1ce1a7addeb",
-                  credential: "G+eiTE1mPZru3K9/",
-                },
-            ],
-          });
+        const remoteConnection = new RTCPeerConnection(IceServer);
         remoteConnectionRef.current = remoteConnection;
 
         remoteConnection.onicecandidate = handleIceCandidate;
