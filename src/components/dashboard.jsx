@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { UserAuth } from "../context/AuthContext";
 import login from '../assets/icons/Login.png';
 import logo from '../assets/logo.png';
+import Navbar from './Navbar';
 
 const Dashboard = () => {
     const userVideoRef = useRef(null);
@@ -78,7 +79,21 @@ const Dashboard = () => {
             const offer = await localConnection.createOffer();
             await localConnection.setLocalDescription(offer);
             set(offerRef, { sdp: offer.sdp, type: offer.type });
+            console.log("Local description set and sent to database");
             localConnectionRef.current = localConnection;
+
+            onValue(answerRef, async (snapshot) => {
+                const data = snapshot.val();
+                console.log("Received answer from database");
+                if (data) {
+                    try {
+                        await localConnection.setRemoteDescription(new RTCSessionDescription(data));
+                        console.log("Answer received from database and set as remote description");
+                    } catch (error) {
+                        console.error("Error setting remote description:", error);
+                    }
+                }
+            });
 
             console.log("Local connection created successfully:", localConnection);
         } catch (error) {
@@ -88,7 +103,7 @@ const Dashboard = () => {
 
     const handleIceCandidate = async (e) => {
         const { localDescription } = localConnectionRef.current;
-        console.log("NEW ice candidate!! on local connection:", JSON.stringify(localDescription));
+        console.log("NEW ice candidate!! on local connection:");
         const temp = { sdp: localDescription.sdp, type: localDescription.type };
         set(offerRef, temp);
     };
@@ -103,40 +118,20 @@ const Dashboard = () => {
         }
     };
 
-    useEffect(() => {
-        if (localConnectionRef.current != null) {
-            const handleAnswer = async (snapshot) => {
-                const { localConnection } = localConnectionRef.current;
-                const data = snapshot.val();
-                console.log("Received answer from database:", data); // Add this console log to check the received data
-                if (data && localConnection) {
-                    try {
-                        await localConnection.setRemoteDescription(new RTCSessionDescription(data));
-                        console.log("Answer received from database and set as remote description", data);
-                    } catch (error) {
-                        console.error("Error setting remote description:", error);
-                    }
-                }
-            };
-
-            onValue(answerRef, handleAnswer);
-
-            return () => {
-                off(answerRef, handleAnswer);
-            };
-        }
-    }, [localConnectionRef.current]);
+  
 
     return (
         <div className="h-screen bg-gray-800 overflow-hidden">
-            <div className='w-full flex items-center justify-center shadow-xl p-2 rounded-2xl'>
+            <div className='w-full flex items-center justify-between shadow-xl p-2 rounded-2xl'>
                 <img src={logo} alt="" width={200} />
-            </div>
-            <div className='flex justify-end p-4'>
+                <Navbar />
+                <div className='flex justify-end p-4'>
                 <button className='flex text-gray-300 items-center gap-2 justify-right' onClick={handleSignOut}>
-                    <img src={login} alt="" width={40} />LogOut
+                    <img src={login} alt="" width={30} />LogOut
                 </button>
             </div>
+            </div>
+            
             <div className='p-4 bg-gray-700 flex justify-center items-center gap-4 '>
                 <div className='flex sm:flex-row my-10 items-center justify-center shadow-xl rounded-xl'>
                     <div className='p-2'>
