@@ -5,6 +5,7 @@ import { onValue, ref, set } from 'firebase/database';
 import { UserAuth } from "../context/AuthContext";
 import { db } from '../firebase';
 import IceServer from '../iceServer';
+import Navbar from './Navbar';
 
 const PeerJoin = () => {
     const userVideoRef = useRef(null);
@@ -88,14 +89,16 @@ const PeerJoin = () => {
 
     return (
         <div className="h-screen bg-gray-800 overflow-hidden">
-            <div className='w-full flex items-center justify-center shadow-xl p-2 rounded-2xl'>
+            <div className='w-full flex items-center justify-between shadow-xl p-2 rounded-2xl'>
                 <img src={logo} alt="" width={200} />
-            </div>
-            <div className='flex justify-end p-4'>
+                <Navbar />
+                <div className='flex justify-end p-4'>
                 <button className='flex text-gray-300 items-center gap-2 justify-right' onClick={handleSignOut}>
-                    <img src={login} alt="" width={40} />LogOut
+                    <img src={login} alt="" width={35} />LogOut
                 </button>
             </div>
+            </div>
+            
             <div className='p-4 bg-gray-700 flex justify-center items-center gap-4 '>
                 <div className='flex sm:flex-row my-10 items-center justify-center shadow-xl rounded-xl'>
                     <div className='p-2'>
