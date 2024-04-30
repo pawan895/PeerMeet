@@ -2,11 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { onValue, ref, set, off } from 'firebase/database';
 import { db } from '../firebase';
 import { UserAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import login from '../assets/icons/Login.png';
 import logo from '../assets/logo.png';
 import Navbar from './Navbar';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const userVideoRef = useRef(null);
     const clientVideoRef = useRef(null);
     const localConnectionRef = useRef(null);
@@ -33,8 +35,8 @@ const Dashboard = () => {
         startWebcam();
 
         return () => {
-            const tracks = userVideoRef.current.srcObject?.getTracks() || [];
-            tracks.forEach(track => track.stop());
+            // const tracks = userVideoRef.current.srcObject?.getTracks() || [];
+            // tracks.forEach(track => track.stop());
         };
     }, []);
 
@@ -112,9 +114,11 @@ const Dashboard = () => {
 
     const handleSignOut = async () => {
         try {
+            navigate('/');
             await logOut();
+            
         } catch (error) {
-            console.log(error);
+            console.log("log out error" , error);
         }
     };
 

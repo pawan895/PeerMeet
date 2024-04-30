@@ -14,6 +14,7 @@ const PeerJoin = () => {
     const { user, logOut } = UserAuth();
     const offerRef = ref(db, `Meets/${user.uid}/Offer`);
     const answerRef = ref(db, `Meets/${user.uid}/Answer`);
+   
 
     useEffect(() => {
         const startWebcam = async () => {

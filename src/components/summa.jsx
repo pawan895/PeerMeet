@@ -94,6 +94,7 @@ const VideoChat = () => {
 
     try {
       const offer = await peerConnection.createOffer();
+      console.log(offer);
       await peerConnection.setLocalDescription(offer);
 
       const database = getDatabase();
