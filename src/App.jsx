@@ -7,6 +7,7 @@ import PeerJoine from './components/PeerJoine.jsx';
 import { ToastContainer } from 'react-toastify';
 import { AuthContextProvider } from './context/AuthContext'
 import RestrictedPage from './context/RestrictedPage'
+import { Toaster } from '@/components/ui/toaster';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -36,6 +37,7 @@ function App() {
         <Route path='/peerjoin' element={<RestrictedPage><PeerJoine /></RestrictedPage>} />
         {/* <Route path='*' element={<PageNotFound />} />           */}
       </Routes>
+      <Toaster />
 
     </div>
 
