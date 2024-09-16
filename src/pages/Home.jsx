@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import login from '../assets/icons/Login.png';
 import add from '../assets/icons/PlusNoBackground.png';
@@ -18,7 +19,7 @@ const Home = () => {
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
-            if (windowWidth < 768) { // Adjust the threshold as needed
+            if (windowWidth < 768) {
                 setAnimationSize({ height: 200, width: 250 });
             } else {
                 setAnimationSize({ height: 400, width: 500 });
@@ -26,48 +27,79 @@ const Home = () => {
         };
 
         window.addEventListener('resize', handleResize);
-        handleResize(); // Call initially to set size based on current window width
+        handleResize();
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     return (
-        <div className='bg-gray-800 h-screen lg:overflow-hidden md:overflow-hidden'>
-            <div className='mx-auto max-w-[80%]'>
-                <div className='flex justify-between items-center'>
-                    <img src={logo} alt="Logo" className='lg:w-48 sm:w-24' />
-                    <Navbar />
-                </div>
-                <div className='flex flex-col lg:flex-row items-center justify-center p-8'>
-                    <div className='flex flex-col gap-4 text-center lg:text-left'>
-                        <h1 className='text-4xl text-gray-200 font-bold'>
-                            Putting the ‘fun’ in <br />
-                            Fundamentals
-                        </h1>
-                        <p className='text-lg text-gray-400'>
-                            PeerMeet lets you VideoChat with your friends.
-                            Choose Random match to match with random peoples,
-                            choose Instant meet to have your own meet.
-                        </p>
-                        <div className='flex flex-col lg:flex-row gap-4'>
-                        <Link to="/peerjoin">
-                            <button className='bg-[#6a4e56] rounded-xl flex gap-2 py-3 px-4 text-gray-200' onClick={handleInstantMeetClick}>
-                                <img src={login} alt="" className='w-6' />
-                                <span>Join Meet</span>
-                            </button>
-                            </Link>
-                            <Link to="/dashboard">
-                                <button className='bg-[#6a4e56] rounded-xl flex gap-2 py-3 px-4 text-gray-200'>
-                                    <img src={add} alt="" className='w-6' />
-                                    <span>Start Meet</span>
-                                </button>
-                            </Link>
-                        </div>
+        <div className='bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen text-white overflow-hidden'>
+            <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+                <header className='py-6'>
+                    <div className='flex justify-between items-center'>
+                        <motion.img 
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            src={logo} 
+                            alt="Logo" 
+                            className='w-32 md:w-48'
+                        />
+                        <Navbar />
                     </div>
-                    <div>
-                        <Lottie options={defaultOptions} height={animationSize.height} width={animationSize.width} />
+                </header>
+
+                <main className='mt-10 md:mt-16'>
+                    <div className='flex flex-col lg:flex-row items-center justify-between'>
+                        <motion.div 
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className='flex flex-col gap-8 text-center lg:text-left lg:w-1/2'
+                        >
+                            <h1 className='text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600'>
+                                Putting the 'fun' in Fundamentals
+                            </h1>
+                            <p className='text-xl text-gray-300'>
+                                PeerMeet lets you VideoChat with your friends. Choose Random match to connect with new people, or start an Instant meet for your own gathering.
+                            </p>
+                            <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
+                                <Link to="/peerjoin">
+                                    <motion.button 
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className='bg-purple-600 hover:bg-purple-700 rounded-full flex items-center gap-2 py-3 px-6 text-white font-semibold transition duration-300'
+                                        onClick={handleInstantMeetClick}
+                                    >
+                                        <img src={login} alt="" className='w-6' />
+                                        <span>Join Meet</span>
+                                    </motion.button>
+                                </Link>
+                                <Link to="/dashboard">
+                                    <motion.button 
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className='bg-pink-600 hover:bg-pink-700 rounded-full flex items-center gap-2 py-3 px-6 text-white font-semibold transition duration-300'
+                                    >
+                                        <img src={add} alt="" className='w-6' />
+                                        <span>Start Meet</span>
+                                    </motion.button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className='mt-10 lg:mt-0 lg:w-1/2'
+                        >
+                            <div className='relative'>
+                                <div className='absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-600 rounded-full filter blur-3xl opacity-70'></div>
+                                <Lottie options={defaultOptions} height={animationSize.height} width={animationSize.width} />
+                            </div>
+                        </motion.div>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     );
